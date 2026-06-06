@@ -22,7 +22,7 @@ public class WebScrapper {
     }
 
 
-    public static Product getProductInfo(String url) throws PriceNotFoundException, IOException {
+    public static AmazonProduct getProductInfo(String url) throws PriceNotFoundException, IOException {
         Document doc = getDocument(url);
 
         Element priceElement = doc.select("span.priceToPay span.a-price-whole").first();
