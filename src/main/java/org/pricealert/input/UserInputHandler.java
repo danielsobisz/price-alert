@@ -1,4 +1,4 @@
-package org.price.alert.input;
+package org.pricealert.input;
 
 import java.util.Scanner;
 

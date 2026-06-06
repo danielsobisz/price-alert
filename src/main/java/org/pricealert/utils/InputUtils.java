@@ -1,4 +1,4 @@
-package org.price.alert.utils;
+package org.pricealert.utils;
 
 public class InputUtils {
     public static String fulfillUrl(String url) {

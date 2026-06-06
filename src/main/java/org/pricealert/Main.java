@@ -1,9 +1,9 @@
-package org.price.alert;
-import org.price.alert.exceptions.PriceNotFoundException;
-import org.price.alert.models.Product;
-import org.price.alert.web.scrapper.WebScrapper;
-import org.price.alert.input.UserInputHandler;
-import org.price.alert.input.InputValidation;
+package org.pricealert;
+import org.pricealert.exceptions.PriceNotFoundException;
+import org.pricealert.models.Product;
+import org.pricealert.webscrapper.WebScrapper;
+import org.pricealert.input.UserInputHandler;
+import org.pricealert.input.InputValidation;
 import java.io.IOException;
 import java.net.URISyntaxException;
 

@@ -1,12 +1,12 @@
-package org.price.alert.web.scrapper;
+package org.pricealert.webscrapper;
 
 import java.io.IOException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
-import org.price.alert.exceptions.PriceNotFoundException;
-import org.price.alert.models.AmazonProduct;
-import org.price.alert.models.Product;
-import org.price.alert.utils.InputUtils;
+import org.pricealert.exceptions.PriceNotFoundException;
+import org.pricealert.models.AmazonProduct;
+import org.pricealert.models.Product;
+import org.pricealert.utils.InputUtils;
 import org.jsoup.nodes.Document;
 
 public class WebScrapper {

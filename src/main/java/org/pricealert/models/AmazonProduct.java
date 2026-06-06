@@ -1,4 +1,4 @@
-package org.price.alert.models;
+package org.pricealert.models;
 
 public class AmazonProduct implements Product {
     private final String title;

@@ -1,4 +1,4 @@
-package org.price.alert.exceptions;
+package org.pricealert.exceptions;
 
 public class PriceNotFoundException extends Exception {
     public PriceNotFoundException(String url) {
