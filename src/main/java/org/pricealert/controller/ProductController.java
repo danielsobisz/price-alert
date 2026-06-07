@@ -1,6 +1,6 @@
 package org.pricealert.controller;
 
-import org.pricealert.models.AmazonProduct;
+import org.pricealert.models.Offer;
 import org.pricealert.service.ProductService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,11 +18,11 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping("/products")
-    public Collection<AmazonProduct> get() { return productService.get();}
+    @GetMapping("/offers")
+    public Collection<Offer> get() { return productService.get();}
 
-    @PostMapping("/products")
-    public AmazonProduct save(@RequestBody AmazonProduct product) {
-        return productService.save(product);
+    @PostMapping("/offer")
+    public Offer save(@RequestBody Offer offer) {
+        return productService.save(offer);
     }
 }

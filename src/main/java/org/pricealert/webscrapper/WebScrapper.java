@@ -4,8 +4,8 @@ import java.io.IOException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.pricealert.exceptions.PriceNotFoundException;
-import org.pricealert.models.AmazonProduct;
-import org.pricealert.models.Product;
+import org.pricealert.models.Offer;
+import org.pricealert.models.Source;
 import org.pricealert.utils.InputUtils;
 import org.jsoup.nodes.Document;
 
@@ -22,7 +22,7 @@ public class WebScrapper {
     }
 
 
-    public static AmazonProduct getProductInfo(String url) throws PriceNotFoundException, IOException {
+    public static Offer getProductInfo(String url) throws PriceNotFoundException, IOException {
         Document doc = getDocument(url);
 
         Element priceElement = doc.select("span.priceToPay span.a-price-whole").first();
@@ -38,6 +38,6 @@ public class WebScrapper {
         assert titleElement != null;
         String title = titleElement.text();
 
-        return new AmazonProduct(title,fullPrice,url);
+        return new Offer(title, Source.AMAZON,fullPrice,url);
     }
 }
