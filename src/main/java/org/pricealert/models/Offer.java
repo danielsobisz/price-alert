@@ -1,19 +1,21 @@
 package org.pricealert.models;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Document(collection = "offers")
 public class Offer {
-    private final String id;
+    @Id
+    private String id;
     private final String productId;
     private final Source source;
     private final String url;
-    private final String currentPrice;
+    private final BigDecimal currentPrice;
 
-    public Offer(String productId, Source source, String url, String currentPrice) {
-        this.id = UUID.randomUUID().toString();
+    public Offer(String productId, Source source, String url, BigDecimal currentPrice) {
         this.productId = productId;
         this.url = url;
         this.source = source;
@@ -37,7 +39,7 @@ public class Offer {
         return url;
     }
 
-    public String getCurrentPrice() {
+    public BigDecimal getCurrentPrice() {
         return currentPrice;
     }
 }

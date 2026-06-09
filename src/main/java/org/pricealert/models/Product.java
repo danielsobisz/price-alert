@@ -1,17 +1,22 @@
 package org.pricealert.models;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.UUID;
 
 @Document(collection = "products")
 public class Product {
-    private final String id;
+    @Id
+    private String id;
     private final String title;
+    @Indexed(unique = true)
+    private final String upc;
 
-    public Product(String title) {
-        this.id = UUID.randomUUID().toString();
+    public Product(String title,String upc) {
         this.title = title;
+        this.upc = upc;
     }
 
 
@@ -21,6 +26,10 @@ public class Product {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getUpc() {
+        return upc;
     }
 }
 

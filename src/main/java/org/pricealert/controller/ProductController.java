@@ -1,15 +1,17 @@
 package org.pricealert.controller;
 
+import org.pricealert.exceptions.PriceNotFoundException;
 import org.pricealert.models.Offer;
+import org.pricealert.models.ScrapedProduct;
 import org.pricealert.service.ProductService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Collection;
 
 @RestController
+@RequestMapping("/products")
 public class ProductController {
 
     private final ProductService productService;
@@ -18,11 +20,11 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping("/offers")
+    @GetMapping("/saved")
     public Collection<Offer> get() { return productService.get();}
 
-    @PostMapping("/offer")
-    public Offer save(@RequestBody Offer offer) {
-        return productService.save(offer);
+    @PostMapping()
+    public ScrapedProduct saveProduct(@RequestBody String url) throws PriceNotFoundException, IOException, URISyntaxException {
+         return productService.saveProduct(url);
     }
 }
