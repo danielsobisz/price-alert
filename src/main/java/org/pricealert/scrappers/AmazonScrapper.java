@@ -9,7 +9,9 @@ import org.pricealert.exceptions.PriceNotFoundException;
 import org.pricealert.models.ScrapedProduct;
 import org.pricealert.models.Source;
 import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AmazonScrapper extends AbstractProductScrapper {
     @Override
     public ScrapedProduct scrape(String url) throws PriceNotFoundException, IOException {
