@@ -2,6 +2,8 @@ package org.pricealert.scrappers;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AmazonScrapper extends AbstractProductScrapper {
+    private static final Pattern ASIN_PATTERN = Pattern.compile("/dp/([A-Z0-9]{10})");
+
     @Override
     public ScrapedProduct scrape(String url) throws PriceNotFoundException, IOException {
         Document doc = getDocument(url);
@@ -22,6 +26,7 @@ public class AmazonScrapper extends AbstractProductScrapper {
         Element priceElement = doc.select("span.priceToPay span.a-price-whole").first();
         Element priceFragileElement =  doc.select("span.priceToPay span.a-price-fraction").first();
         Element titleElement = doc.select("span#productTitle").first();
+        Element imageElement = doc.select("img#landingImage").first();
 
         for (Element row : rows) {
             Element th = row.selectFirst("th");
@@ -36,12 +41,52 @@ public class AmazonScrapper extends AbstractProductScrapper {
             throw new PriceNotFoundException(url);
         }
 
-        assert priceFragileElement != null;
-        BigDecimal fullPrice = new BigDecimal(priceElement.text().replace(",",".") + priceFragileElement.text());
-        assert titleElement != null;
+        String whole = priceElement.text().replace(",", "").trim();
+        String fraction = priceFragileElement != null ? priceFragileElement.text().trim() : "00";
+
+        BigDecimal fullPrice = new BigDecimal(whole + "." + fraction);
+
         String title = titleElement.text();
+        String amazonId = getAmazonId(doc);
+        String imageUrl = getImageUrl(imageElement);
 
+        return new ScrapedProduct(title, url, fullPrice, upc, amazonId, imageUrl, Source.AMAZON);
+    }
 
-        return new ScrapedProduct(title,url, fullPrice, upc, Source.AMAZON);
+    private String getAmazonId(Document doc) {
+        Element canonicalLink = doc.select("link[rel=canonical]").first();
+
+        if (canonicalLink != null) {
+            Matcher matcher = ASIN_PATTERN.matcher(canonicalLink.attr("href"));
+
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+        }
+
+        Element asinElement = doc.select("[data-csa-c-asin]").stream()
+                .filter(element -> !element.attr("data-csa-c-asin").isBlank())
+                .findFirst()
+                .orElse(null);
+
+        if (asinElement == null) {
+            return "";
+        }
+
+        return asinElement.attr("data-csa-c-asin");
+    }
+
+    private String getImageUrl(Element imageElement) {
+        if (imageElement == null) {
+            return "";
+        }
+
+        String highResolutionImageUrl = imageElement.attr("data-old-hires");
+
+        if (!highResolutionImageUrl.isBlank()) {
+            return highResolutionImageUrl;
+        }
+
+        return imageElement.attr("src");
     }
 }
