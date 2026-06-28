@@ -7,11 +7,7 @@ import org.pricealert.models.*;
 import org.pricealert.repository.OfferRepository;
 import org.pricealert.repository.PriceHistoryRepository;
 import org.pricealert.repository.ProductRepository;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -23,14 +19,12 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final PriceHistoryRepository priceHistoryRepository;
     private final ProductScrapper scrapper;
-    private final MongoTemplate mongoTemplate;
 
-    public ProductService(OfferRepository offerRepository, ProductRepository productRepository, PriceHistoryRepository priceHistoryRepository,ProductScrapper scrapper, MongoTemplate mongoTemplate) {
+    public ProductService(OfferRepository offerRepository, ProductRepository productRepository, PriceHistoryRepository priceHistoryRepository,ProductScrapper scrapper) {
         this.offerRepository = offerRepository;
         this.productRepository = productRepository;
         this.priceHistoryRepository = priceHistoryRepository;
         this.scrapper = scrapper;
-        this.mongoTemplate = mongoTemplate;
     }
 
     public ScrapedProduct saveProduct(String url) throws IOException, PriceNotFoundException {
@@ -38,7 +32,7 @@ public class ProductService {
         ensureProductExist(product);
 
         Optional<Offer> existingOffer =
-                offerRepository.findByProductId(product.title());
+                offerRepository.findByProductId(product.amazonId());
 
         if (existingOffer.isEmpty()) {
             createOfferWithHistory(product);
@@ -59,14 +53,14 @@ public class ProductService {
 
     private void ensureProductExist(ScrapedProduct product) {
         if(!this.productRepository.existsByUpc(product.upc())) {
-            this.productRepository.save(new Product(product.title(),product.upc()));
+            this.productRepository.save(new Product(product.title(),product.upc(),product.imageUrl()));
         }
     }
 
     private void createOfferWithHistory(ScrapedProduct product) {
         Offer offer = offerRepository.save(
                 new Offer(
-                        product.title(),
+                        product.amazonId(),
                         Source.AMAZON,
                         product.url(),
                         product.price()
@@ -80,13 +74,11 @@ public class ProductService {
     }
 
     private void appendPrice(Offer offer, ScrapedProduct product) {
-        Query query = new Query(Criteria.where("offerId").is(offer.getId()));
+        PriceHistory history = priceHistoryRepository.findByOfferId(offer.getId())
+                .orElseGet(() -> new PriceHistory(offer.getId()));
 
-        Update update = new Update()
-                .push("history", new PriceEntry(product.price()));
-
-
-        mongoTemplate.updateFirst(query, update, PriceHistory.class);
+        history.addPrice(product.price());
+        priceHistoryRepository.save(history);
     }
 
     public Collection<Offer> get() {
