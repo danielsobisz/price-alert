@@ -22,7 +22,6 @@ public class Offer {
         this.currentPrice = currentPrice;
     }
 
-
     public String getId() {
         return id;
     }

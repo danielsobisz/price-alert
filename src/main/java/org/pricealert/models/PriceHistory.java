@@ -16,7 +16,7 @@ public class PriceHistory {
 
     private String offerId;
 
-    private List<PriceEntry> history = new ArrayList<>();
+    private  List<PriceEntry> history = new ArrayList<>();
 
     public PriceHistory() {}
 

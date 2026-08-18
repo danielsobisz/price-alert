@@ -17,9 +17,7 @@ import org.springframework.stereotype.Component;
 public class AmazonScrapper extends AbstractProductScrapper {
     private static final Pattern ASIN_PATTERN = Pattern.compile("/dp/([A-Z0-9]{10})");
 
-    @Override
-    public ScrapedProduct scrape(String url) throws PriceNotFoundException, IOException {
-        Document doc = getDocument(url);
+    public ScrapedProduct scrapeDocument(Document doc, String url) throws PriceNotFoundException {
         String upc = "";
 
         Elements rows = doc.select("tr");
@@ -41,7 +39,7 @@ public class AmazonScrapper extends AbstractProductScrapper {
             throw new PriceNotFoundException(url);
         }
 
-        String whole = priceElement.text().replace(",", "").trim();
+        String whole = priceElement.text().replace(",", "").trim().replaceAll("\\s+","");
         String fraction = priceFragileElement != null ? priceFragileElement.text().trim() : "00";
 
         BigDecimal fullPrice = new BigDecimal(whole + "." + fraction);
@@ -51,6 +49,12 @@ public class AmazonScrapper extends AbstractProductScrapper {
         String imageUrl = getImageUrl(imageElement);
 
         return new ScrapedProduct(title, url, fullPrice, upc, amazonId, imageUrl, Source.AMAZON);
+    }
+
+    @Override
+    public ScrapedProduct scrape(String url) throws PriceNotFoundException, IOException {
+        Document doc = getDocument(url);
+        return scrapeDocument(doc, url);
     }
 
     private String getAmazonId(Document doc) {
