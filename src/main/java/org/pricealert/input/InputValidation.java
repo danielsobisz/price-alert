@@ -1,16 +1,17 @@
 package org.pricealert.input;
-import org.pricealert.utils.InputUtils;
-import java.net.MalformedURLException;
+
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 public class InputValidation {
-    public static boolean isValidURL(String url) throws MalformedURLException, URISyntaxException {
-        try {
-            new URL(InputUtils.fulfillUrl(url)).toURI();
-            return true;
-        } catch (MalformedURLException e) {
+    public static boolean isValidURL(String url) {
+        if (url == null || url.isBlank()) {
             return false;
+        }
+
+        try {
+            URI parsed = new URI(url);
+            return parsed.getScheme() != null && parsed.getHost() != null;
         } catch (URISyntaxException e) {
             return false;
         }
